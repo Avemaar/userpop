@@ -87,7 +87,9 @@ class edit_task_form extends moodleform{
             'ajax' => 'core_user/form_user_selector',
             'valuehtmlcallback' => function($userid) {
             global $DB, $OUTPUT;
-            $userid = 1;
+            
+	    //test purpose to see how can user id excluded from new search	
+	    $userid = 1;
             if ($userid){
                 return false;
             }
