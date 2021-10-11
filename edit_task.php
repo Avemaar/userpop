@@ -14,6 +14,9 @@ global $DB;
         
     $id = optional_param('id', null, PARAM_INT);
     
+    if (!$id) {
+        print_error('invalid id');
+    }
     
     $tasks = $DB->get_record('local_userpop_tasks',['id'=>$id],'*',MUST_EXIST);
     $userids = $DB->get_records('local_userpop_tasks_clerks',['task_id'=>$tasks->id]);
@@ -25,9 +28,11 @@ global $DB;
         
         
     }
+
+    $mform = new edit_task_form();
+    $tasks->userids = explode(',', '1,2,3');
     
-    $mform = new edit_task_form(null,['name'=>$tasks->name,'userids'=>$users]);
-    //$mform->set_data($tasks);
+    $mform->set_data($tasks);
     
 
     
@@ -43,7 +48,7 @@ global $DB;
         //$DB->update_record('local_userpop_task',$task_data);
         
         
-
+        
         
         foreach($fromform->userids as $key=>$users){
             foreach($users as $user){

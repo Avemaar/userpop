@@ -79,13 +79,13 @@ class edit_task_form extends moodleform{
         
         $mform->addElement('text', 'name', get_string('name', 'local_userpop'));
         $mform->setType('name', PARAM_RAW);
-        $mform->setDefault('name', $data['name']);
+        //$mform->setDefault('name', $data['name']);
         
         
         
         $options = array(
             'ajax' => 'core_user/form_user_selector',
-            'valuehtmlcallback' => function($userid) {
+            /*'valuehtmlcallback' => function($userid) {
             global $DB, $OUTPUT;
             
 	    //test purpose to see how can user id excluded from new search	
@@ -111,6 +111,24 @@ class edit_task_form extends moodleform{
             }
             
             return $OUTPUT->render_from_template('core_user/form_user_selector_suggestion', $user);
+            },*/
+            'valuehtmlcallback' => function($userid) {
+            global $DB, $OUTPUT;
+            
+            $user = $DB->get_record('user', ['id' => (int) $userid], '*', IGNORE_MISSING);
+            if (!$user) {
+                return false;
+            }
+            
+            if (class_exists('\core_user\fields')) {
+                $extrafields = \core_user\fields::for_identity(\context_system::instance(),
+                    false)->get_required_fields();
+            } else {
+                $extrafields = get_extra_user_fields(context_system::instance());
+            }
+            //return $OUTPUT->render_from_template('core_user/form_user_selector_suggestion', $user);
+            //return $OUTPUT->render_from_template('core_user/form_user_selector_suggestion', \local_userpop\external\get_users::prepare_result_object($user, $extrafields));
+            return $OUTPUT->render_from_template('report_customsql/form-user-selector-suggestion',\report_customsql\external\get_users::prepare_result_object($user, $extrafields));
             },
             'multiple' => true
             );
@@ -122,7 +140,7 @@ class edit_task_form extends moodleform{
         //
         //just give a try to setup the saved values from the db
         //actually i have no idea, also does not know how to exclude from new search the previusly values
-        $mform->setDefault('userids', $data['userids'][1]['user_id']);
+        //$mform->setDefault('userids', $data['userids'][1]['user_id']);
         
         
         $this->add_action_buttons(true);
